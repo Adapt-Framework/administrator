@@ -16,8 +16,6 @@ namespace extensions\administrator{
             /* Detach the root controllers view from the dom */
             $this->dom->find('.controller.root')->detach();
             
-            
-            
             /* Attach our view to the dom */
             $this->dom->add($this->view);
             
@@ -25,25 +23,15 @@ namespace extensions\administrator{
             
             $navbar = new bs\view_navbar();
             $navbar->static_top = true;
-            $navbar->brand = new html_img(array('src' => '/adapt/applications/octane_ats/static/images/tgif_logo.png'));
-            $navbar->brand_url = "/";
+            //$navbar->brand = new html_img(array('src' => '/adapt/applications/octane_ats/static/images/tgif_logo.png'));
+            $navbar->brand = 'Administrator';
+            $navbar->brand_url = "/administrator";
             //$navbar->add('Fridays <strong>Facts</strong>', '/getting-started');
             
-            $menu = new bs\view_dropdown('Fridays <strong>Facts</strong>');
-            $menu->add(new bs\view_dropdown_menu_item('Item...'));
-            $navbar->add($menu);
+            $menu = new \extensions\menus\model_menu();
+            $menu->load_by_name('administrator_main_navigation');
+            $navbar->find('.navbar-collapse')->append($menu->get_view());
             
-            $menu = new bs\view_dropdown("What's it like <strong>working here</strong>");
-            $menu->add(new bs\view_dropdown_menu_item('Item...'));
-            $navbar->add($menu);
-            
-            $menu = new bs\view_dropdown("Becoming part <strong>of our family</strong>");
-            $menu->add(new bs\view_dropdown_menu_item('Item...'));
-            $navbar->add($menu);
-            
-            $menu = new bs\view_dropdown("Making our people <strong>the best</strong>");
-            $menu->add(new bs\view_dropdown_menu_item('Item...'));
-            $navbar->add($menu);
             
             $nav = new bs\view_nav('navbar');
             $nav->add_class('navbar-right');
