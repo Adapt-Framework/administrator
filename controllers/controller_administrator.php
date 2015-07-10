@@ -7,7 +7,7 @@ namespace extensions\administrator{
     
     use \extensions\bootstrap_views as bs;
     
-    class controller_administrator extends \frameworks\adapt\controller {
+    class controller_administrator extends controller {
         
         protected $_content;
         
@@ -33,11 +33,19 @@ namespace extensions\administrator{
             $navbar->find('.navbar-collapse')->append($menu->get_view());
             
             
-            $nav = new bs\view_nav('navbar');
-            $nav->add_class('navbar-right');
-            $navbar->find('.navbar-collapse')->append($nav);
+            $menu = new \extensions\menus\model_menu();
+            $menu->load_by_name('administrator_settings_menu');
+            $view = $menu->get_view();
+            $view->add_class('navbar-right');
+            $navbar->find('.navbar-collapse')->append($view);
             
-            $navbar->add('Sign <strong>in</strong>', '/sign-in');
+            
+            
+            //$nav = new bs\view_nav('navbar');
+            //$nav->add_class('navbar-right');
+            //$navbar->find('.navbar-collapse')->append($nav);
+            
+            //$navbar->add('Main <strong>sign</strong>', '/sign-in');
             
             $header->add($navbar);
             
@@ -45,26 +53,66 @@ namespace extensions\administrator{
             
             $row = new bs\view_row();
             
-            $content = new bs\view_cell(null, 12, 12, 12, 12);
+            //$content = new bs\view_cell(null, 12, 12, 12, 12);
             
-            $row->add($content);
+            //$row->add($content);
             
             $this->view->add(new bs\view_container($row));
-            $this->_content = $content;
+            //$this->_content = $content;
+            $this->_content = $row;
             
                         
             $footer = new html_footer('Powered by Adapt Framework');
             $this->view->add($footer);
         }
         
+        /*
+         * Overrides
+         */
         public function add_view($data){
             $this->_content->add($data);
         }
         
-        public function view_default(){
-            $this->add_view(new html_h1('Administrator'));
+        /*
+         * Permissions
+         */
+        public function permission_view_default(){
+            return $this->session->user->has_permission(PERM_CAN_LOGIN_TO_ADMINISTRATOR);
         }
         
+        public function permission_view_users(){
+            return $this->session->user->has_permission(PERM_CAN_MANAGE_USER_ACCOUNTS);
+        }
+        
+        public function permission_view_contacts(){
+            return $this->session->user->has_permission(PERM_CAN_MANAGE_CONTACTS);
+        }
+        
+        
+        /*
+         * Views
+         */
+        public function view_default(){
+            $top = new bs\view_cell(new html_h1('Dashboard'), 12, 12, 12, 12);
+            $this->add_view($top);
+            
+            $left = new bs\view_cell('left', 12, 6, 4, 4);
+            $this->add_view($left);
+            
+            $center = new bs\view_cell('center', 12, 6, 4, 4);
+            $this->add_view($center);
+            
+            $right = new bs\view_cell('right', 12, 6, 4, 4);
+            $this->add_view($right);
+        }
+        
+        public function view_users(){
+           return $this->load_controller("\\extensions\\administrator\\controller_administrator_users"); 
+        }
+        
+        public function view_contacts(){
+            $this->add_view(new \extensions\contacts\view_form_page_contact());
+        }
     }
     
     
