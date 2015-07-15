@@ -332,11 +332,11 @@ namespace extensions\administrator{
                 $form = new \extensions\forms\model_form();
                 $form->load_by_name($this->form_name);
                 $view = $form->get_view($this->model->to_hash());
-                $view->add_class('two-column');
-                $view->find('.field-select,.field-input')->add_class('col-sm-12')->add_class('col-md-6');
-                $view->find('.field-text-editor')->add_class('col-sm-12');
-                $view->find('h1,h2,h3,h4,h5,h6')->add_class('col-sm-12')->add_class('clearfix');
-                $view->find('.controls')->add_class('col-sm-12');
+                //$view->add_class('two-column');
+                //$view->find('.field-select,.field-input')->add_class('col-sm-12')->add_class('col-md-6');
+                //$view->find('.field-text-editor')->add_class('col-sm-12');
+                //$view->find('h1,h2,h3,h4,h5,h6')->add_class('col-sm-12')->add_class('clearfix');
+                //$view->find('.controls')->add_class('col-sm-12');
                 $top->add($view);
             }else{
                 header('Location: ' . $this->url);
