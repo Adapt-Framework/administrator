@@ -192,6 +192,7 @@ namespace extensions\administrator{
                 //$this->add_view(new html_pre(print_r($this->request, true)));
                 $this->model->push($this->request);
                 $this->model->owner_id = $this->session->user->user_id;
+                //$this->add_view(new html_pre(print_r($this->model->_get_data(), true)));
                 $this->model->save();
                 //$this->add_view(new html_pre(print_r($this->model->error(), true)));
                 header("Location: /{$this->request['url']}");
