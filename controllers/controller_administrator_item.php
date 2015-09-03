@@ -189,13 +189,24 @@ namespace extensions\administrator{
          */
         public function action_save(){
             if ($this->model && $this->model instanceof \frameworks\adapt\model){
-                //$this->add_view(new html_pre(print_r($this->request, true)));
+                print 'rahh';
+                print new html_pre(print_r($this->request, true));
                 $this->model->push($this->request);
+                print 'ask';
                 $this->model->owner_id = $this->session->user->user_id;
                 //$this->add_view(new html_pre(print_r($this->model->_get_data(), true)));
                 $this->model->save();
+                print 'foo';
+                $errors = $this->model->errors(true);
+                if ($errors && is_array($errors) && count($errors)){
+                    print 'bar';
+                    $this->respond($this->form_name, array('errors' => $errors));
+                    $this->redirect($this->request['current_url']);
+                }
+                print 'fubar';
                 //$this->add_view(new html_pre(print_r($this->model->error(), true)));
-                header("Location: /{$this->request['url']}");
+                $this->redirect('/' . $this->request['url']);
+                //header("Location: /{$this->request['url']}");
             }
         }
         
