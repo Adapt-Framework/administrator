@@ -1,11 +1,11 @@
 <?php
 
-namespace extensions\administrator{
+namespace adapt\administrator{
     
     /* Prevent direct access */
     defined('ADAPT_STARTED') or die;
     
-    use \extensions\bootstrap_views as bs;
+    use \bootstrap\views as bs;
     
     class controller_administrator_item extends controller {
         
@@ -70,7 +70,17 @@ namespace extensions\administrator{
          * Properties
          */
         public function pget_title(){
-            return $this->_title;
+            $title = $this->_title;
+            
+            if ($this->model->is_loaded){
+                if (!is_null($this->model->label)){
+                    $title .= ": " . $this->model->label;
+                }elseif(!is_null($this->model->name)){
+                    $title .= ": " . $this->model->name;
+                }
+            }
+            
+            return $title;
         }
         
         public function pset_title($title){
@@ -156,7 +166,7 @@ namespace extensions\administrator{
             $sql = $this->data_source->sql;
             $sql->select(array('c' => 'count(*)'))
                 ->from($this->get_statement(), 'c')
-                ->execute();
+                ->execute(0);
             $results = $sql->results();
             
             if (is_array($results) && count($results)){
@@ -175,20 +185,30 @@ namespace extensions\administrator{
             return 0;
         }
         
+        public function pget_edit_icon(){
+            return new \font_awesome\views\view_icon('pencil');
+        }
+        
+        public function pget_edit_view(){
+            return "edit";
+        }
+        
+        public function pget_edit_title(){
+            return "Edit this {$this->title}";
+        }
+        
         /*
          * Helper functions
          */
         public function get_statement(){
             
         }
-
-        
         
         /*
          * Actions
          */
         public function action_save(){
-            if ($this->model && $this->model instanceof \frameworks\adapt\model){
+            if ($this->model && $this->model instanceof \adapt\model){
                 print 'rahh';
                 print new html_pre(print_r($this->request, true));
                 $this->model->push($this->request);
@@ -231,17 +251,17 @@ namespace extensions\administrator{
             $offset = ($this->items_per_page * ($this->page - 1));
             $sql->limit($this->items_per_page, $offset);
             
-            $results = $sql->execute()->results();
+            $results = $sql->execute(0)->results();
             
             
             
             if (count($results)){
                 foreach($results as &$result){
-                    $result['...'] = new html_a(new \extensions\font_awesome_views\view_icon('pencil'), array('href' => "{$url}/edit?{$table_name}[{$key}]=" . $result['#'], 'title' => 'Edit this ' . strtolower($this->title)));
+                    $result['...'] = new html_a($this->edit_icon, array('href' => "{$url}/{$this->edit_view}?{$table_name}[{$key}]=" . $result['#'], 'title' => $this->edit_title));
                     unset($result['#']);
                 }
                 
-                $table = new \frameworks\adapt\view_table($results);
+                $table = new \adapt\view_table($results);
                 
                 
                 /* Make columns sortable */
@@ -256,7 +276,7 @@ namespace extensions\administrator{
                         $icon = 'sort-' . $this->sort_direction;
                     }
                     
-                    $a = new html_a(array("{$label} ", new html_span(new \extensions\font_awesome_views\view_icon($icon), array('class' => $class))), array('href' => 'javascript:void(0);', 'class' => 'sorter', 'data-state' => $state, 'data-value' => $field));
+                    $a = new html_a(array("{$label} ", new html_span(new \font_awesome\views\view_icon($icon), array('class' => $class))), array('href' => 'javascript:void(0);', 'class' => 'sorter', 'data-state' => $state, 'data-value' => $field));
                     
                     /* Update the cols */
                     $cells = $table->find('thead th')->get();
@@ -272,7 +292,7 @@ namespace extensions\administrator{
                 //$output->add(new html_pre($this->page_count));
                 $control_wrapper = new html_div(array('class' => 'control-wrapper'));
                 if ($this->page_count > 1){
-                    $pager = new \extensions\bootstrap_views\view_pagination('/', $this->page_count, $this->page);
+                    $pager = new \bootstrap\views\view_pagination('/', $this->page_count, $this->page);
                     $control_wrapper->add($pager);
                     
                     $pager->find('a')->add_class('pager-page')->attr('href', 'javascript:void(0);');
@@ -300,7 +320,7 @@ namespace extensions\administrator{
             }
             $h1 = new html_h1($title);
             if ($this->permission_view_new()){
-                $icon = new \extensions\font_awesome_views\view_icon('plus');
+                $icon = new \font_awesome\views\view_icon('plus');
                 $a = new html_a($icon, array('href' => "/" . $this->request['url'] . "/new", 'class' => 'pull-right', 'title' => 'New'));
                 $h1->add($a);
             }
@@ -315,8 +335,8 @@ namespace extensions\administrator{
             $form->add(new html_input(array('type' => 'hidden', 'name' => 'page', 'value' => $this->page)));
             $form->add(new html_input(array('type' => 'hidden', 'name' => 'items_per_page', 'value' => $this->items_per_page)));
             
-            $control = new \extensions\bootstrap_views\view_input('text', 'q', '', 'Search...', \extensions\bootstrap_views\view_input::LARGE);
-            $group = new \extensions\bootstrap_views\view_form_group($control, 'Filter...');
+            $control = new bs\view_input('text', 'q', '', 'Search...', bs\view_input::LARGE);
+            $group = new bs\view_form_group($control, 'Filter...');
             $group->find('label')->add_class('sr-only');
             $form->add($group);
             
@@ -330,18 +350,12 @@ namespace extensions\administrator{
             if ($this->model->is_loaded){
                 //$this->add_view(new html_pre(print_r($this->model->to_hash(), true)));
                 //$this->add_view(new html_pre(print_r($this->model->to_hash_string(), true)));
-                $title = $this->title;
                 
-                if (!is_null($this->model->label)){
-                    $title .= ": " . $this->model->label;
-                }elseif(!is_null($this->model->name)){
-                    $title .= ": " . $this->model->name;
-                }
                 
-                $top = new bs\view_cell(new html_h1($title), 12, 12, 12, 12);
+                $top = new bs\view_cell(new html_h1($this->title), 12, 12, 12, 12);
                 $this->add_view($top);
                 
-                $form = new \extensions\forms\model_form();
+                $form = new \adapt\forms\model_form();
                 $form->load_by_name($this->form_name);
                 $view = $form->get_view($this->model->to_hash());
                 //$view->add_class('two-column');
@@ -361,7 +375,7 @@ namespace extensions\administrator{
             $this->add_view($top);
             
             //if (isset($this->form_name)){
-                $form = new \extensions\forms\model_form();
+                $form = new \adapt\forms\model_form();
                 $form->load_by_name($this->form_name);
                 $view = $form->get_view();
                 //$view->add_class('two-column');

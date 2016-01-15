@@ -1,11 +1,11 @@
 <?php
 
-namespace extensions\administrator{
+namespace adapt\administrator{
     
     /* Prevent direct access */
     defined('ADAPT_STARTED') or die;
     
-    use \extensions\bootstrap_views as bs;
+    use \bootstrap\views as bs;
     
     class controller_administrator extends controller {
         
@@ -107,7 +107,7 @@ namespace extensions\administrator{
         }
         
         public function view_users(){
-           return $this->load_controller("\\extensions\\administrator\\controller_administrator_users"); 
+           return $this->load_controller("\\adapt\\administrator\\controller_administrator_users"); 
         }
         
         public function view_contacts(){

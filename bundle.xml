@@ -1,22 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
 <adapt_framework>
-  <bundle>
-    <label>Administrator</label>
-    <name>administrator</name>
-    <type>extension</type>
-    <version>1.0.0</version>
-    <namespace>/extension/administrator</namespace>
-    <description>Provides backend administration area</description>
-    <copyright>2015 Adapt Framework</copyright>
-    <license>MIT</license>
-    <depends_on>
-      <bundle>jquery</bundle>
-      <bundle>bootstrap_views</bundle>
-      <bundle>font_awesome_views</bundle>
-      <bundle>menus</bundle>
-      <bundle>users</bundle>
-      <bundle>forms</bundle>
-      <bundle>roles_and_permissions</bundle>
-    </depends_on>
-  </bundle>
+    <bundle>
+        <label>Adapt Administrator</label>
+        <name>administrator</name>
+        <type>extension</type>
+        <version>1.0.0</version>
+        <namespace>\adapt\administrator</namespace>
+        <description>Provides backend administration area</description>
+        <copyright>2015 Adapt Framework</copyright>
+        <license>MIT</license>
+        <depends_on>
+            <bundle>
+              <name>jquery</name>
+            </bundle>
+            <bundle>
+              <name>bootstrap_views</name>
+              <version>1.0</version>
+            </bundle>
+            <bundle>
+              <name>font_awesome_views</name>
+              <version>1.0</version>
+            </bundle>
+            <bundle>
+              <name>menus</name>
+              <version>1.0</version>
+            </bundle>
+            <bundle>
+              <name>users</name>
+              <version>1.0</version>
+            </bundle>
+            <bundle>
+              <name>forms</name>
+              <version>1.0</version>
+            </bundle>
+            <bundle>
+              <name>roles_and_permissions</name>
+              <version>1.0</version>
+            </bundle>
+            <bundle>
+              <name>adapt</name>
+              <version>1.0</version>
+            </bundle>
+        </depends_on>
+        <schema>
+          <add>
+            <table name="administrator_dashboard">
+                <field name="administrator_dashboard_id" key="primary" auto-increment="yes">
+                    <label>#</label>
+                    <data_type>bigint</data_type>
+                </field>
+                <field name="permission_id" key="foreign" referenced-table-name="permission" referenced-field-name="permission_id">
+                    <label>Permission</label>
+                    <data_type>bigint</data_type>
+                    <lookup_table>permission</lookup_table>
+                </field>
+                <field name="name" index="yes" index-size="32">
+                    <label>Name</label>
+                    <data_type>varchar</data_type>
+                    <max_length>64</max_length>
+                </field>
+                <field name="label">
+                    <label>Label</label>
+                    <data_type>varchar</data_type>
+                    <max_length>64</max_length>
+                </field>
+                <field name="custom_view">
+                    <label>Custom View</label>
+                    <data_type>varchar</data_type>
+                    <max_length>1024</max_length>
+                    <nullable>No</nullable>
+                </field>
+                <field name="priority">
+                    <label>Priority</label>
+                    <data_type>int</data_type>
+                </field>
+                <!-- Data Created / modified / deleted to be added automatically -->
+            </table>
+            <table name="role">
+                    <record>
+                        <name>Administrator</name>
+                        <description>Accounts used for administration.</description>
+                    </record>
+                </table>
+                <table name="permission_category">
+                    <record>
+                        <name>administration</name>
+                        <label>Administration</label>
+                    </record>
+                    <record>
+                        <name>site_settings</name>
+                        <label>Site Settings</label>
+                    </record>
+                </table>
+                <table name="permission">
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="administration" />
+                        <name>can_login_to_administrator</name>
+                        <label>Can login to administrator</label>
+                        <description>Allows the user to access the administration area of the site</description>
+                        <php_key>PERM_CAN_LOGIN_TO_ADMINISTRATOR</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="administration" />
+                        <name>can_manage_contacts</name>
+                        <label>Can manage contacts</label>
+                        <description>Allows the user to manage contacts in the administration area of the site</description>
+                        <php_key>PERM_CAN_MANAGE_CONTACTS</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="administration" />
+                        <name>can_manage_users</name>
+                        <label>Can manage users</label>
+                        <description>Allows the user to manage other user accounts in the administration area of the site</description>
+                        <php_key>PERM_CAN_MANAGE_USER_ACCOUNTS</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="site_settings" />
+                        <name>can_manage_bundles</name>
+                        <label>Can manage bundles</label>
+                        <description>Allows the user to manage manage bundles</description>
+                        <php_key>PERM_CAN_MANAGE_BUNDLES</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="site_settings" />
+                        <name>can_change_global_bundle_settings</name>
+                        <label>Can change bundle settings</label>
+                        <description>Allows the user to change global settings (settings.xml)</description>
+                        <php_key>PERM_CAN_CHANGE_BUNDLE_SETTINGS</php_key>
+                    </record>
+                </table>
+                <table name="role_permission">
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission_id" where-name-is="can_login_to_administrator" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission_id" where-name-is="can_manage_contacts" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission_id" where-name-is="can_manage_users" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission_id" where-name-is="can_change_password" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission_id" where-name-is="can_login" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission_id" where-name-is="can_manage_bundles" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission_id" where-name-is="can_change_global_bundle_settings" />
+                    </record>
+                </table>
+                <table name="menu">
+                    <record>
+                        <menu_type_id get-from="menu_type" where-name-is="bs_navbar_nav" />
+                        <name>administrator_main_navigation</name>
+                        <label>Administration menu</label>
+                        <permission_id get-from="permission" where-name-is="can_login_to_administrator" />
+                    </record>
+                    <record>
+                        <menu_type_id get-from="menu_type" where-name-is="bs_navbar_nav" />
+                        <name>administrator_settings_menu</name>
+                        <label>Administration Settings Menu</label>
+                        <permission_id get-from="permission" where-name-is="can_login_to_administrator" />
+                    </record>
+                </table>
+                <table name="menu_item">
+                    <record>
+                        <menu_id get-from="menu" where-name-is="administrator_main_navigation" />
+                        <label>Dashbaord</label>
+                        <menu_item_type>Link</menu_item_type>
+                        <link>/administrator</link>
+                        <priority>1</priority>
+                        <permission_id get-from="permission" where-name-is="can_login_to_administrator" />
+                    </record>
+                    <record>
+                        <menu_id get-from="menu" where-name-is="administrator_main_navigation" />
+                        <label>Contacts</label>
+                        <menu_item_type>Link</menu_item_type>
+                        <link>/administrator/contacts</link>
+                        <priority>98</priority>
+                        <permission_id get-from="permission" where-name-is="can_manage_contacts" />
+                    </record>
+                    <record>
+                        <menu_id get-from="menu" where-name-is="administrator_main_navigation" />
+                        <label>Users</label>
+                        <menu_item_type>Link</menu_item_type>
+                        <link>/administrator/users</link>
+                        <priority>99</priority>
+                        <permission_id get-from="permission" where-name-is="can_manage_users" />
+                    </record>
+                </table>
+          </add>
+        </schema>
+    </bundle>
 </adapt_framework>

@@ -1,6 +1,6 @@
 <?php
 
-namespace extensions\administrator{
+namespace adapt\administrator{
     
     /* Prevent direct access */
     defined('ADAPT_STARTED') or die;
@@ -37,7 +37,7 @@ namespace extensions\administrator{
             foreach($results as $result){
                 $items[$result['id']] = $result['name'];
             }
-            $control = new \extensions\forms\view_field_select(
+            $control = new \adapt\forms\view_field_select(
                 array(
                     'name' => 'filter[role_id]',
                     'allowed_values' => $items,
@@ -49,7 +49,7 @@ namespace extensions\administrator{
             $filters[] = $control;
             
             /* Filter: In-active users */
-            $control = new \extensions\bootstrap_views\view_input_radio(new \extensions\bootstrap_views\view_input("checkbox", 'filter[show_inactive]', 'Yes'), 'Include inactive users');
+            $control = new \bootstrap\views\view_input_radio(new \bootstrap\views\view_input("checkbox", 'filter[show_inactive]', 'Yes'), 'Include inactive users');
             $control->find('.form-control')->remove_class('form-control');
             $filters[] = $control;
             
@@ -77,14 +77,14 @@ namespace extensions\administrator{
                     ->join('contact', 'c', 'contact_id')
                     ->join('contact_email', 'ce', 'contact_id');
                 
-                $where = new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('u.date_deleted'), 'is', new \frameworks\adapt\sql('null'));
-                $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('c.date_deleted'), 'is', new \frameworks\adapt\sql('null')));
-                $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('ce.date_deleted'), 'is', new \frameworks\adapt\sql('null')));
-                $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('ce.priority'), '=', '1'));
+                $where = new \adapt\sql_condition(new \adapt\sql('u.date_deleted'), 'is', new \adapt\sql('null'));
+                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('c.date_deleted'), 'is', new \adapt\sql('null')));
+                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ce.date_deleted'), 'is', new \adapt\sql('null')));
+                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ce.priority'), '=', '1'));
                 
                 if ($this->search_string != ''){
-                    $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
-                    $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql("ce.email"), 'like', "%{$this->search_string}%"));
+                    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
+                    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("ce.email"), 'like', "%{$this->search_string}%"));
                 }
                 
             }else{
@@ -97,27 +97,27 @@ namespace extensions\administrator{
                 );
                 
                 $sql->from('user', 'u')
-                    ->join('contact', 'c', 'contact_id', \frameworks\adapt\sql::LEFT_JOIN);
+                    ->join('contact', 'c', 'contact_id', \adapt\sql::LEFT_JOIN);
                 
-                $where = new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('u.date_deleted'), 'is', new \frameworks\adapt\sql('null'));
-                $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('c.date_deleted'), 'is', new \frameworks\adapt\sql('null')));
+                $where = new \adapt\sql_condition(new \adapt\sql('u.date_deleted'), 'is', new \adapt\sql('null'));
+                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('c.date_deleted'), 'is', new \adapt\sql('null')));
                 
                 if ($this->search_string != ''){
-                    $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
-                    $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql("u.username"), 'like', "%{$this->search_string}%"));
+                    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
+                    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("u.username"), 'like', "%{$this->search_string}%"));
                 }
                 
             }
             
             if (strtolower($this->request['filter']['show_inactive']) != 'yes'){
-                $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('u.status'), '=', 'Active'));
+                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('u.status'), '=', 'Active'));
             }
             
             
             if (!in_array($this->request['filter']['role_id'], array('', '*'))){
                 $sql->join('role_user', 'ru', 'user_id');
-                $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('ru.date_deleted'), 'is', new \frameworks\adapt\sql('null')));
-                $where = new \frameworks\adapt\sql_and($where, new \frameworks\adapt\sql_condition(new \frameworks\adapt\sql('ru.role_id'), '=', $this->request['filter']['role_id']));
+                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ru.date_deleted'), 'is', new \adapt\sql('null')));
+                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ru.role_id'), '=', $this->request['filter']['role_id']));
             }
             
             
