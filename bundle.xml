@@ -39,9 +39,144 @@
             </bundle>
             <bundle>
               <name>adapt</name>
-              <version>1.0</version>
+              <version>2.0</version>
             </bundle>
         </depends_on>
+        <forms>
+            <form name="user_account_details" submission-url="/" actions="administrator/users/save" method="post" show-steps="No" show-processing-page="Yes">
+                <page>
+                    <section repeatable="No" layout="standard">
+                        <group layout="simple">
+                            <field type="Hidden" name="user[user_id]" data-type="varchar" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Static" name="user[username]" data-type="varchar" label="Username" mandatory="Yes" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Checkbox" name="user[password_change_required]" data-type="varchar" label="User must change password at next login">
+                                <allowed_values>
+                                    <value>Yes</value>
+                                </allowed_values>
+                            </field>
+                        </group>
+                    </section>
+                    <button style="Primary" action="Next page" label="Save" />
+                </page>
+            </form>
+            <form name="menu" submission-url="/administrator/menus" actions="administrator/menus/save" method="post" show-steps="No" show-processing-page="Yes">
+                <page>
+                    <section repeatable="No" layout="standard" title="Menu description">
+                        <group layout="simple">
+                            <field type="Hidden" name="menu[menu_id]" data-type="bigint" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Text" name="menu[label]" data-type="varchar" label="Label" mandatory="Yes" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Textarea" name="menu[description]" data-type="text" label="Description" />
+                        </group>
+                    </section>
+                    <section repeatable="No" layout="standard" title="Menu style" custom-view="\adapt\administrator\view_form_page_section_menu_style">
+                        <group layout="simple">
+                            <field type="Select" name="menu[menu_type_id]" data-type="bigint" lookup-table="menu_type" label="Style" />
+                        </group>
+                    </section>
+                    <section repeatable="No" layout="standard" title="Menu items" custom-view="\adapt\administrator\view_form_page_section_menu_items"></section>
+                    <button style="Primary" action="Next page" label="Save" />
+                </page>
+            </form>
+            <form name="role" submission-url="/administrator/roles" actions="administrator/roles/save" method="post" show-steps="No" show-processing-page="Yes">
+                <page>
+                    <section repeatable="No" layout="standard" title="Role description">
+                        <group layout="simple">
+                            <field type="Hidden" name="role[role_id]" data-type="bigint" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Text" name="role[label]" data-type="varchar" label="Label" mandatory="Yes" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Textarea" name="role[description]" data-type="text" label="Description" />
+                        </group>
+                    </section>
+                    <section repeatable="No" layout="standard" title="Password policy" custom-view="\adapt\administrator\view_form_page_section_password_policy"></section>
+                    <section repeatable="No" layout="standard" title="Permissions" custom-view="\adapt\administrator\view_form_page_section_permissions"></section>
+                    <button style="Primary" action="Next page" label="Save" />
+                </page>
+            </form>
+            <form name="password_policy" submission-url="/administrator/password-policy" actions="administrator/password-policy/save" method="post" show-steps="No" show-processing-page="Yes">
+                <page>
+                    <section repeatable="No" layout="standard" title="Policy description">
+                        <group layout="simple">
+                            <field type="Hidden" name="password_policy[password_policy_id]" data-type="bigint" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Text" name="password_policy[label]" data-type="varchar" label="Label" mandatory="Yes" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Textarea" name="password_policy[description]" data-type="text" label="Description" />
+                        </group>
+                    </section>
+                    <section repeatable="No" layout="2_col" title="Policy">
+                        <group layout="simple">
+                            <field type="Select" name="password_policy[allow_password_change]" data-type="enum('Yes', 'No')" label="Allowed to change password">
+                                <allowed_values>
+                                    <value>Yes</value>
+                                    <value>No</value>
+                                </allowed_values>
+                            </field>
+                        </group>
+                        <group layout="simple">
+                            <field type="Text" name="password_policy[can_change_password_after_days]" data-type="int" label="Password change allowed every X days" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Text" name="password_policy[must_change_password_after_days]" data-type="int" label="Must change password every X days" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Text" name="password_policy[password_history]" data-type="int" label="Password cannot be the same as last X password" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Text" name="password_policy[min_length]" data-type="int" label="Minimum password length" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Text" name="password_policy[max_length]" data-type="int" label="Maximum password length" />
+                        </group>
+                        <group layout="simple">
+                            <field type="Select" name="password_policy[mixed_case]" data-type="enum('Yes', 'No')" label="Password should include mixed case">
+                                <allowed_values>
+                                    <value>Yes</value>
+                                    <value>No</value>
+                                </allowed_values>
+                            </field>
+                        </group>
+                        <group layout="simple">
+                            <field type="Select" name="password_policy[include_alpha]" data-type="enum('Yes', 'No')" label="Password should include A-Z characters">
+                                <allowed_values>
+                                    <value>Yes</value>
+                                    <value>No</value>
+                                </allowed_values>
+                            </field>
+                        </group>
+                        <group layout="simple">
+                            <field type="Select" name="password_policy[include_numeric]" data-type="enum('Yes', 'No')" label="Password should include 0-9 characters">
+                                <allowed_values>
+                                    <value>Yes</value>
+                                    <value>No</value>
+                                </allowed_values>
+                            </field>
+                        </group>
+                        <group layout="simple">
+                            <field type="Select" name="password_policy[include_symbols]" data-type="enum('Yes', 'No')" label="Password should include symbols">
+                                <allowed_values>
+                                    <value>Yes</value>
+                                    <value>No</value>
+                                </allowed_values>
+                            </field>
+                        </group>
+                    </section>
+                    <button style="Primary" action="Next page" label="Save" />
+                </page>
+            </form>
+        </forms>
         <schema>
           <add>
             <table name="administrator_dashboard">
@@ -74,13 +209,13 @@
                     <label>Priority</label>
                     <data_type>int</data_type>
                 </field>
-                <!-- Data Created / modified / deleted to be added automatically -->
             </table>
             <table name="role">
-                    <record>
-                        <name>Administrator</name>
-                        <description>Accounts used for administration.</description>
-                    </record>
+                <record>
+                    <name>administrator</name>
+                    <label>Administrator</label>
+                    <description>Accounts used for administration.</description>
+                </record>
                 </table>
                 <table name="permission_category">
                     <record>
@@ -91,6 +226,10 @@
                         <name>site_settings</name>
                         <label>Site Settings</label>
                     </record>
+                    <record>
+                        <name>email</name>
+                        <label>Email</label>
+                    </record>
                 </table>
                 <table name="permission">
                     <record>
@@ -99,6 +238,27 @@
                         <label>Can login to administrator</label>
                         <description>Allows the user to access the administration area of the site</description>
                         <php_key>PERM_CAN_LOGIN_TO_ADMINISTRATOR</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="administration" />
+                        <name>can_manage_roles</name>
+                        <label>Can manage user roles</label>
+                        <description>Allows the user to create or update user roles.</description>
+                        <php_key>PERM_CAN_MANAGE_USER_ROLES</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="administration" />
+                        <name>can_manage_password_policy</name>
+                        <label>Can manage password policies</label>
+                        <description>Allows the user to create or update password policies.</description>
+                        <php_key>PERM_CAN_MANAGE_PASSWORD_POLICIES</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="administration" />
+                        <name>can_manage_task_scheduler</name>
+                        <label>Can manage scheduled tasks</label>
+                        <description>Allows the user to manage background tasks.</description>
+                        <php_key>PERM_CAN_MANAGE_TASK_SCHEDULER</php_key>
                     </record>
                     <record>
                         <permission_category_id get-from="permission_category" where-name-is="administration" />
@@ -128,35 +288,94 @@
                         <description>Allows the user to change global settings (settings.xml)</description>
                         <php_key>PERM_CAN_CHANGE_BUNDLE_SETTINGS</php_key>
                     </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="email" />
+                        <name>can_manage_email_accounts</name>
+                        <label>Can manage email accounts</label>
+                        <description>Allows the user manage email accounts</description>
+                        <php_key>PERM_CAN_MANAGE_EMAIL_ACCOUNTS</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="email" />
+                        <name>can_manage_email_templates</name>
+                        <label>Can manage email templates</label>
+                        <description>Allows the user manage email templates</description>
+                        <php_key>PERM_CAN_MANAGE_EMAIL_TEMPLATES</php_key>
+                    </record>
+                    <record>
+                        <permission_category_id get-from="permission_category" where-name-is="site_settings" />
+                        <name>can_manage_menus</name>
+                        <label>Can manage site menus</label>
+                        <description>Allows the user manage menus</description>
+                        <php_key>PERM_CAN_MANAGE_MENUS</php_key>
+                    </record>
                 </table>
                 <table name="role_permission">
                     <record>
                         <role_id get-from="role" where-name-is="Administrator" />
-                        <permission_id get-from="permission_id" where-name-is="can_login_to_administrator" />
+                        <permission_id get-from="permission" where-name-is="can_login_to_administrator" />
                     </record>
                     <record>
                         <role_id get-from="role" where-name-is="Administrator" />
-                        <permission_id get-from="permission_id" where-name-is="can_manage_contacts" />
+                        <permission_id get-from="permission" where-name-is="can_manage_contacts" />
                     </record>
                     <record>
                         <role_id get-from="role" where-name-is="Administrator" />
-                        <permission_id get-from="permission_id" where-name-is="can_manage_users" />
+                        <permission_id get-from="permission" where-name-is="can_manage_users" />
                     </record>
                     <record>
                         <role_id get-from="role" where-name-is="Administrator" />
-                        <permission_id get-from="permission_id" where-name-is="can_change_password" />
+                        <permission_id get-from="permission" where-name-is="can_manage_bundles" />
                     </record>
                     <record>
                         <role_id get-from="role" where-name-is="Administrator" />
-                        <permission_id get-from="permission_id" where-name-is="can_login" />
+                        <permission_id get-from="permission" where-name-is="can_change_global_bundle_settings" />
                     </record>
                     <record>
                         <role_id get-from="role" where-name-is="Administrator" />
-                        <permission_id get-from="permission_id" where-name-is="can_manage_bundles" />
+                        <permission_id get-from="permission" where-name-is="can_manage_email_accounts" />
                     </record>
                     <record>
                         <role_id get-from="role" where-name-is="Administrator" />
-                        <permission_id get-from="permission_id" where-name-is="can_change_global_bundle_settings" />
+                        <permission_id get-from="permission" where-name-is="can_manage_email_templates" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission" where-name-is="can_manage_menus" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission" where-name-is="can_manage_roles" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission" where-name-is="can_manage_password_policy" />
+                    </record>
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <permission_id get-from="permission" where-name-is="can_manage_task_scheduler" />
+                    </record>
+                </table>
+                <table name="password_policy">
+                    <record>
+                        <priority>1</priority>
+                        <name>administrator</name>
+                        <label>Administrator password policy</label>
+                        <description>The default password policy for the Administrator role</description>
+                        <allow_password_change>Yes</allow_password_change>
+                        <must_change_password_after_days>60</must_change_password_after_days>
+                        <min_length>8</min_length>
+                        <max_length>30</max_length>
+                        <mixed_case>Yes</mixed_case>
+                        <include_alpha>Yes</include_alpha>
+                        <include_numeric>Yes</include_numeric>
+                        <include_symbols>No</include_symbols>
+                    </record>
+                </table>
+                <table name="role_password_policy">
+                    <record>
+                        <role_id get-from="role" where-name-is="Administrator" />
+                        <password_policy_id get-from="password_policy" where-name-is="administrator" />
                     </record>
                 </table>
                 <table name="menu">
@@ -176,28 +395,171 @@
                 <table name="menu_item">
                     <record>
                         <menu_id get-from="menu" where-name-is="administrator_main_navigation" />
-                        <label>Dashbaord</label>
+                        <label>Dashboard</label>
+                        <name>dashboard</name>
                         <menu_item_type>Link</menu_item_type>
                         <link>/administrator</link>
                         <priority>1</priority>
                         <permission_id get-from="permission" where-name-is="can_login_to_administrator" />
+                        <icon_class />
+                        <icon_name />
                     </record>
                     <record>
                         <menu_id get-from="menu" where-name-is="administrator_main_navigation" />
                         <label>Contacts</label>
+                        <name>contacts</name>
                         <menu_item_type>Link</menu_item_type>
                         <link>/administrator/contacts</link>
                         <priority>98</priority>
                         <permission_id get-from="permission" where-name-is="can_manage_contacts" />
+                        <icon_class />
+                        <icon_name />
                     </record>
                     <record>
                         <menu_id get-from="menu" where-name-is="administrator_main_navigation" />
                         <label>Users</label>
+                        <name>users</name>
                         <menu_item_type>Link</menu_item_type>
                         <link>/administrator/users</link>
                         <priority>99</priority>
                         <permission_id get-from="permission" where-name-is="can_manage_users" />
+                        <icon_class />
+                        <icon_name />
                     </record>
+                    <record>
+                        <menu_id get-from="menu" where-name-is="administrator_settings_menu" />
+                        <label />
+                        <name>settings</name>
+                        <menu_item_type>Dropdown menu</menu_item_type>
+                        <link />
+                        <priority>1</priority>
+                        <permission_id get-from="permission" where-name-is="can_login_to_administrator" />
+                        <icon_class>\font_awesome\views\view_icon</icon_class>
+                        <icon_name>cog</icon_name>
+                    </record>
+                </table>
+                <table name="menu_item_item">
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Heading</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_change_global_bundle_settings" />
+                        <custom_view />
+                        <link />
+                        <priority>1</priority>
+                        <label>Site configuration</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Link</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_change_global_bundle_settings" />
+                        <custom_view />
+                        <link>/administrator/site-settings</link>
+                        <priority>2</priority>
+                        <label>Settings</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Link</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_menus" />
+                        <custom_view />
+                        <link>/administrator/menus</link>
+                        <priority>3</priority>
+                        <label>Menus</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Link</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_task_scheduler" />
+                        <custom_view />
+                        <link>/administrator/scheduler</link>
+                        <priority>4</priority>
+                        <label>Task scheduler</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Heading</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_bundles" />
+                        <custom_view />
+                        <link />
+                        <priority>101</priority>
+                        <label>Bundles</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Link</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_bundles" />
+                        <custom_view />
+                        <link>/administrator/manage-bundles</link>
+                        <priority>102</priority>
+                        <label>Manage bundles</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Heading</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_roles" />
+                        <custom_view />
+                        <link />
+                        <priority>201</priority>
+                        <label>Security</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Link</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_roles" />
+                        <custom_view />
+                        <link>/administrator/roles</link>
+                        <priority>202</priority>
+                        <label>User roles</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Link</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_password_policy" />
+                        <custom_view />
+                        <link>/administrator/password-policy</link>
+                        <priority>203</priority>
+                        <label>Password policies</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Heading</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_email_accounts" />
+                        <custom_view />
+                        <link />
+                        <priority>301</priority>
+                        <label>Email</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Link</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_email_accounts" />
+                        <custom_view />
+                        <link>/administrator/email/accounts</link>
+                        <priority>302</priority>
+                        <label>Email accounts</label>
+                        <description />
+                    </record>
+                    <record>
+                        <menu_item_id get-from="menu_item" where-name-is="settings" />
+                        <menu_item_item_type>Link</menu_item_item_type>
+                        <permission_id get-from="permission" where-name-is="can_manage_email_templates" />
+                        <custom_view />
+                        <link>/administrator/email/templates</link>
+                        <priority>303</priority>
+                        <label>Email templates</label>
+                        <description />
+                    </record>
+                    
                 </table>
           </add>
         </schema>

@@ -13,10 +13,10 @@ namespace adapt\administrator{
             $this->request['filter']['show_inactive'] = $this->data_source->escape($this->request['filter']['show_inactive']);
             
             
-            $this->model = new model_user();
+            $this->model = new \adapt\users\model_user();
             parent::__construct();
             $this->title = 'User';
-            $this->form_name = 'user';
+            $this->form_name = 'user_account_details';
             $this->sortable_fields = array('Name' => 'c.surname', 'Email' => 'ce.email', 'Username' => 'u.username');
             
             /* Add filters */
@@ -28,7 +28,7 @@ namespace adapt\administrator{
             $sql = $this->data_source->sql;
             $sql->select(array('id' => 'role_id', 'name' => 'name'))
                 ->from('role')
-                ->where(new \frameworks\adapt\sql_condition($this->data_source->sql('date_deleted'), 'is', $this->data_source->sql('null')))
+                ->where(new sql_cond('date_deleted', sql::IS, new sql_null()))
                 ->order_by('name');
             
             $results = $sql->execute()->results();
@@ -54,6 +54,41 @@ namespace adapt\administrator{
             $filters[] = $control;
             
             $this->filters = $filters;
+            
+            if ($this->permission_action_reset_password()){
+                $this->add_action(new html_button("Reset the users password", array('class' => 'action action-reset-password btn btn-link btn-block')));
+            }
+            
+            if ($this->permission_action_require_password_change()){
+                $this->add_action(new html_button("Require the user to change thier password", array('class' => 'action action-require-password-change btn btn-link btn-block')));
+            }
+            
+            if ($this->permission_action_suspend()){
+                $this->add_action(new html_button("Suspend this user account", array('class' => 'action action-suspend btn btn-link btn-block')));
+            }
+            
+            if ($this->permission_action_delete()){
+                $this->add_action(new html_button("Delete this user account", array('class' => 'action action-delete btn btn-link btn-block')));
+            }
+        }
+        
+        /*
+         * Permissions
+         */
+        public function permission_action_delete(){
+            return true;
+        }
+        
+        public function permission_action_suspend(){
+            return true;
+        }
+        
+        public function permission_action_reset_password(){
+            return true;
+        }
+        
+        public function permission_action_require_password_change(){
+            return true;
         }
         
         /*
@@ -68,7 +103,7 @@ namespace adapt\administrator{
                 $sql->select(
                     array(
                         '#' => 'u.user_id',
-                        'Name' => $this->data_source->sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"),
+                        'Name' => new sql_trim(new sql_concat('c.title', sql::q(" "), 'c.forename', sql::q(" "), 'c.surname')),
                         'Email' => 'ce.email'
                     )
                 );
@@ -77,47 +112,67 @@ namespace adapt\administrator{
                     ->join('contact', 'c', 'contact_id')
                     ->join('contact_email', 'ce', 'contact_id');
                 
-                $where = new \adapt\sql_condition(new \adapt\sql('u.date_deleted'), 'is', new \adapt\sql('null'));
-                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('c.date_deleted'), 'is', new \adapt\sql('null')));
-                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ce.date_deleted'), 'is', new \adapt\sql('null')));
-                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ce.priority'), '=', '1'));
+                $where = new sql_and(
+                    new sql_cond('u.date_deleted', sql::IS, new sql_null()),
+                    new sql_cond('c.date_deleted', sql::IS, new sql_null()),
+                    new sql_cond('ce.date_deleted', sql::IS, new sql_null()),
+                    new sql_cond('ce.priority', sql::EQUALS, sql::q("1"))
+                );
+                
                 
                 if ($this->search_string != ''){
-                    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
-                    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("ce.email"), 'like', "%{$this->search_string}%"));
+                    $where->add(new sql_cond(new sql_cond(new sql_trim(new sql_concat('c.title', sql::q(" "), 'c.forename', sql::q(" "), 'c.surname')), "like", sql::q("%{$this->search_string}%"))));
+                    $where->add(new sql_cond(new sql_cond('ce.email', "like", sql::q("%{$this->search_string}%"))));
+                    //$where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
+                    //$where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("ce.email"), 'like', "%{$this->search_string}%"));
                 }
                 
             }else{
                 $sql->select(
                     array(
                         '#' => 'u.user_id',
-                        'Name' => $this->data_source->sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"),
+                        'Name' => new sql_trim(new sql_concat('c.title', sql::q(" "), 'c.forename', sql::q(" "), 'c.surname')),
                         'Username' => 'u.username'
                     )
                 );
                 
                 $sql->from('user', 'u')
-                    ->join('contact', 'c', 'contact_id', \adapt\sql::LEFT_JOIN);
+                    ->left_join('contact', 'c', 'contact_id');
                 
-                $where = new \adapt\sql_condition(new \adapt\sql('u.date_deleted'), 'is', new \adapt\sql('null'));
-                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('c.date_deleted'), 'is', new \adapt\sql('null')));
+                $where = new sql_new(
+                    new sql_cond('u.date_deleted', sql::IS, new sql_null()),
+                    new sql_cond('c.date_deleted', sql::IS, new sql_null())
+                );
+                
+                //$where = new \adapt\sql_condition(new \adapt\sql('u.date_deleted'), 'is', new \adapt\sql('null'));
+                //$where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('c.date_deleted'), 'is', new \adapt\sql('null')));
+                
+                //if ($this->search_string != ''){
+                //    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
+                //    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("u.username"), 'like', "%{$this->search_string}%"));
+                //}
                 
                 if ($this->search_string != ''){
-                    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
-                    $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("u.username"), 'like', "%{$this->search_string}%"));
+                    $where->add(new sql_cond(new sql_cond(new sql_trim(new sql_concat('c.title', sql::q(" "), 'c.forename', sql::q(" "), 'c.surname')), "like", sql::q("%$this->search_string%"))));
+                    $where->add(new sql_cond(new sql_cond('ce.email', "like", sql::q("%$this->search_string%"))));
+                    //$where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("trim(concat(c.title, ' ', c.forename, ' ', c.surname))"), 'like', "%{$this->search_string}%"));
+                    //$where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql("ce.email"), 'like', "%{$this->search_string}%"));
                 }
                 
             }
             
             if (strtolower($this->request['filter']['show_inactive']) != 'yes'){
-                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('u.status'), '=', 'Active'));
+                $where->add(new sql_cond('u.status', sql::EQUALS, sql::q("Active")));
+                //$where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('u.status'), '=', 'Active'));
             }
             
             
             if (!in_array($this->request['filter']['role_id'], array('', '*'))){
                 $sql->join('role_user', 'ru', 'user_id');
-                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ru.date_deleted'), 'is', new \adapt\sql('null')));
-                $where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ru.role_id'), '=', $this->request['filter']['role_id']));
+                //$where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ru.date_deleted'), 'is', new \adapt\sql('null')));
+                //$where = new \adapt\sql_and($where, new \adapt\sql_condition(new \adapt\sql('ru.role_id'), '=', $this->request['filter']['role_id']));
+                $where->add(new sql_cond('ru.date_deleted', sql::IS, new sql_null()));
+                $where->add(new sql_cond('ru.role_id', sql::EQUALS, $this->request['filter']['role_id']));
             }
             
             
@@ -142,6 +197,26 @@ namespace adapt\administrator{
         
         public function permission_view_new(){
             return $this->session->user->has_permission(PERM_CAN_MANAGE_USER_ACCOUNTS);
+        }
+        
+        /*
+         * Actions
+         */
+        
+        
+        //public function view_edit(){
+            //$this->add_view($this->model->to_form());
+        //    if ($this->model->is_loaded){
+        //        $this->add_view(new view_item_user($this->model));
+        //    }else{
+        //        parent::edit();
+        //    }
+        //}
+        
+        public function view_contact(){
+            $contact = $this->session->user->contact;
+            
+            $this->add_view(new \adapt\contacts\view_contact($contact->to_hash_string(), true));
         }
         
     }

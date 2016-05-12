@@ -20,6 +20,7 @@ namespace adapt\administrator{
         protected $_sortable_fields;
         protected $_record_count;
         protected $_filters;
+        protected $_actions;
         
         public function __construct(){
             parent::__construct();
@@ -32,39 +33,83 @@ namespace adapt\administrator{
             
             if (isset($this->request['page']) && is_numeric($this->request['page']) && $this->request['page'] >= 1){
                 $this->page = $this->request['page'];
+                $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".page", $this->page);
             }else{
-                $this->page = 1;
+                $this->page = $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".page");
+                
+                if (is_null($this->page)){
+                    $this->page = 1;
+                }
             }
             
             if (isset($this->request['q'])){
                 $this->search_string = $this->request['q'];
+                $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".q", $this->search_string);
             }else{
-                $this->search_string = '';
+                $this->search_string = $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".q");
+                
+                if (is_null($this->search_string)){
+                    $this->search_string = '';
+                }
             }
             
             if (isset($this->request['items_per_page']) && is_numeric($this->request['items_per_page']) && $this->request['items_per_page'] >= 1){
                 $this->items_per_page = $this->request['items_per_page'];
+                $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".items_per_page", $this->items_per_page);
             }else{
-                $this->items_per_page = 50;
+                $this->items_per_page = $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".items_per_page");
+                
+                if (is_null($this->items_per_page)){
+                    $this->items_per_page = 50;
+                }
             }
             
             if (isset($this->request['sort_order'])){
                 $this->sort_order = $this->request['sort_order'];
+                $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".sort_order", $this->sort_order);
             }else{
-                $this->sort_order = '';
+                $this->sort_order = $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".sort_order");
+                
+                if (is_null($this->sort_order)){
+                    $this->sort_order = '';
+                }
             }
             
-            if (isset($this->request['sort_direction']) && in_array(strtolower($this->request['sort_direction']), array('asc', 'desc'))){
-                $this->sort_direction = strtolower($this->request['sort_direction']);
+            //if (isset($this->request['sort_order'])){
+            //    $this->sort_order = $this->request['sort_order'];
+            //}else{
+            //    $this->sort_order = '';
+            //}
+            
+            if (isset($this->request['sort_direction'])){
+                $this->sort_direction = $this->request['sort_direction'];
+                $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".sort_direction", $this->sort_direction);
             }else{
-                $this->sort_direction = 'asc';
+                $this->sort_direction = $this->session->user->setting("controller.administrator.item." . $this->model->table_name . ".sort_direction");
+                
+                if (is_null($this->sort_direction)){
+                    $this->sort_direction = 'asc';
+                }
             }
+            
+            //if (isset($this->request['sort_direction']) && in_array(strtolower($this->request['sort_direction']), array('asc', 'desc'))){
+            //    $this->sort_direction = strtolower($this->request['sort_direction']);
+            //}else{
+            //    $this->sort_direction = 'asc';
+            //}
+            
+            $this->session->user->save();
             
             $this->_sortable_fields = array();
             $this->_filters = array();
             
             $this->view->add_class('administrator_item');
         }
+        
+        /*
+         * Permissions
+         */
+        
         
         /*
          * Properties
@@ -161,6 +206,21 @@ namespace adapt\administrator{
             if (is_array($filters)) $this->_filters = $filters;
         }
         
+        public function pget_actions(){
+            return $this->_actions;
+        }
+        
+        public function pset_actions($value = array()){
+            if (is_array($value)) $this->_actions = $value;
+        }
+        //public function pget_item_view(){
+        //    return $this->_item_view;
+        //}
+        //
+        //public function pset_item_view($view){
+        //    $this->_item_view = $view;
+        //}
+        
         public function pget_count(){
             if (!is_null($this->_record_count)) return $this->_record_count;
             $sql = $this->data_source->sql;
@@ -200,6 +260,14 @@ namespace adapt\administrator{
         /*
          * Helper functions
          */
+        public function add_action($action){
+            if (!is_array($this->_actions)){
+                $this->_actions = array();
+            }
+            
+            $this->_actions[] = $action;
+        }
+        
         public function get_statement(){
             
         }
@@ -209,24 +277,32 @@ namespace adapt\administrator{
          */
         public function action_save(){
             if ($this->model && $this->model instanceof \adapt\model){
-                print 'rahh';
-                print new html_pre(print_r($this->request, true));
+                //print 'rahh';
+                //print new html_pre(print_r($this->request, true));
+                //exit(1);
                 $this->model->push($this->request);
-                print 'ask';
+                //print 'ask';
                 $this->model->owner_id = $this->session->user->user_id;
                 //$this->add_view(new html_pre(print_r($this->model->_get_data(), true)));
                 $this->model->save();
-                print 'foo';
+                //print 'foo';
                 $errors = $this->model->errors(true);
                 if ($errors && is_array($errors) && count($errors)){
-                    print 'bar';
+                    //print 'bar';
                     $this->respond($this->form_name, array('errors' => $errors));
                     $this->redirect($this->request['current_url']);
                 }
-                print 'fubar';
+                //print 'fubar';
                 //$this->add_view(new html_pre(print_r($this->model->error(), true)));
                 $this->redirect('/' . $this->request['url']);
                 //header("Location: /{$this->request['url']}");
+            }
+        }
+        
+        public function action_delete(){
+            if ($this->model && $this->model instanceof \adapt\model){
+                $this->model->delete();
+                //TODO: Redirect
             }
         }
         
@@ -306,7 +382,7 @@ namespace adapt\administrator{
                 return $output;
             }
             
-            return new html_div(new html_span('No results'), array('class' => 'strike'));
+            return new html_div(new html_span('No results'), array('class' => 'no-results strike'));
         }
         
         public function view_default(){
@@ -324,18 +400,18 @@ namespace adapt\administrator{
                 $a = new html_a($icon, array('href' => "/" . $this->request['url'] . "/new", 'class' => 'pull-right', 'title' => 'New'));
                 $h1->add($a);
             }
-            $top = new bs\view_cell($h1, 12, 12, 12, 12);
-            $this->add_view($top);
+            //$top = new bs\view_cell($h1, 12, 12, 12, 12);
+            $this->add_view($h1);
             
             $form = new bs\view_form('/' . $this->request['url'], 'post');
-            $top->add($form);
+            $this->add_view($form);
             
             $form->add(new html_input(array('type' => 'hidden', 'name' => 'sort_order', 'value' => $this->sort_order)));
             $form->add(new html_input(array('type' => 'hidden', 'name' => 'sort_direction', 'value' => $this->sort_direction)));
             $form->add(new html_input(array('type' => 'hidden', 'name' => 'page', 'value' => $this->page)));
             $form->add(new html_input(array('type' => 'hidden', 'name' => 'items_per_page', 'value' => $this->items_per_page)));
             
-            $control = new bs\view_input('text', 'q', '', 'Search...', bs\view_input::LARGE);
+            $control = new bs\view_input('text', 'q', $this->search_string, 'Search...', bs\view_input::LARGE);
             $group = new bs\view_form_group($control, 'Filter...');
             $group->find('label')->add_class('sr-only');
             $form->add($group);
@@ -343,27 +419,42 @@ namespace adapt\administrator{
             $form->add(new html_div($this->filters, array('class' => 'filters')));
             
             
-            $top->add(new html_div($this->view_data(), array('class' => 'ajax-data')));
+            $this->add_view(new html_div($this->view_data(), array('class' => 'ajax-data bottom')));
         }
         
         public function view_edit(){
             if ($this->model->is_loaded){
+                $form = new model_form();
+                $form_view = null;
+                
+                if ($this->_form_name && $form->load_by_name($this->_form_name)){
+                    $values = array_merge($this->request, $this->model->to_hash_string());
+                    $form_view = $form->get_view($values);
+                }else{
+                    /* Use the model's form */
+                    $form_view = $this->model->to_form($this->title, "/" . $this->request['url'], $this->request['url'] . "/save");
+                }
+                
+                $view = new view_item($this->title, $this->model, $form_view, $this->_actions);
+                $this->add_view($view);
+                
+                //$this->add_view(new html_pre(print_r($this->request, true)));
+                //$this->add_view(new html_pre($this->url));
                 //$this->add_view(new html_pre(print_r($this->model->to_hash(), true)));
                 //$this->add_view(new html_pre(print_r($this->model->to_hash_string(), true)));
                 
                 
-                $top = new bs\view_cell(new html_h1($this->title), 12, 12, 12, 12);
-                $this->add_view($top);
                 
-                $form = new \adapt\forms\model_form();
-                $form->load_by_name($this->form_name);
-                $view = $form->get_view($this->model->to_hash());
-                //$view->add_class('two-column');
-                //$view->find('.field-select,.field-input')->add_class('col-sm-12')->add_class('col-md-6');
-                //$view->find('.field-text-editor')->add_class('col-sm-12');
-                //$view->find('h1,h2,h3,h4,h5,h6')->add_class('col-sm-12')->add_class('clearfix');
-                //$view->find('.controls')->add_class('col-sm-12');
-                $top->add($view);
+                //$top = new bs\view_cell(null, 12, 12, 12, 12);
+                //$this->add_view($top);
+                
+                //$top->add(new html_h1($this->title));
+                //$form = new \adapt\forms\model_form();
+                //$form->load_by_name($this->form_name);
+                //$view = $form->get_view($this->model->to_hash_string());
+                //$top->add($view);
+                
+                //$this->add_view(new view_item($this->_title, $model, $form));
             }else{
                 header('Location: ' . $this->url);
                 exit(0);

@@ -5,3 +5,71 @@
     margin-bottom: 15px;
     margin-right: 15px;
 }
+
+.controller.administrator > header nav{
+    margin-bottom: 0;
+}
+
+.controller.administrator > .view.container{
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.controller.administrator .view.table th{
+    background: black;
+    color: white;
+}
+
+.controller.administrator .under-panel{
+    background: rgba(255, 255, 255, 0.3);
+    padding: 15px;
+}
+
+.controller.administrator .top{
+    margin-top: 15px;
+}
+
+.controller.administrator .bottom{
+    margin-bottom: 15px;
+}
+
+.controller.administrator .under-panel h1{
+    margin-top: 0;
+}
+
+.controller.administrator .view.item .actions-cell .btn-block{
+    text-align: left;
+    white-space: normal;
+}
+
+.controller.administrator .actions-cell{
+    background: rgba(255, 255, 255, 0.3);
+    padding-bottom: 15px;
+}
+
+.controller.administrator .no-results{
+    text-align: center;
+    font-size: 24px;
+}
+
+.controller.administrator .menu-builder .menu-item,
+.controller.administrator .menu-builder .sub-menu-item{
+    margin-bottom: 5px;
+}
+
+.controller.administrator .menu-builder .menu-item .menu-label{
+    font-weight: bold;
+}
+
+.controller.administrator .menu-builder .menu-item .menu-link{
+    color: #555;
+    margin-left: 15px;
+}
+
+.controller.administrator .menu-builder .menu-item .controls{
+    margin: -5px -5px 0 0;
+}
+
+.controller.administrator .menu-builder .menu-item .controls .btn.btn-link{
+    margin: 0;
+    padding: 0;
+}
