@@ -23,10 +23,10 @@ namespace adapt\administrator{
             
             $navbar = new bs\view_navbar();
             $navbar->static_top = true;
-            //$navbar->brand = new html_img(array('src' => '/adapt/applications/octane_ats/static/images/tgif_logo.png'));
+            
             $navbar->brand = 'Administrator';
             $navbar->brand_url = "/administrator";
-            //$navbar->add('Fridays <strong>Facts</strong>', '/getting-started');
+            
             
             $menu = new \extensions\menus\model_menu();
             $menu->load_by_name('administrator_main_navigation');
