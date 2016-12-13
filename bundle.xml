@@ -5,10 +5,22 @@
         <name>administrator</name>
         <type>extension</type>
         <version>1.0.0</version>
+        <version_status>release</version_status>
+        <availability>public</availability>
         <namespace>\adapt\administrator</namespace>
         <description>Provides backend administration area</description>
         <copyright>2015 Adapt Framework</copyright>
         <license>MIT</license>
+        <vendor>
+            <name>Adapt Framework</name>
+            <website>https://www.adaptframework.com</website>
+        </vendor>
+        <authors>
+            <author>
+                <name>Matt Bruton</name>
+                <email>matt.bruton@gmail.com</email>
+            </author>
+        </authors>
         <depends_on>
             <bundle>
               <name>jquery</name>
