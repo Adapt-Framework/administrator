@@ -50,10 +50,72 @@
               <version>1.0</version>
             </bundle>
             <bundle>
+                <name>language_en_gb</name>
+                <version>1.0</version>
+            </bundle>
+            <bundle>
               <name>adapt</name>
               <version>2.0</version>
             </bundle>
         </depends_on>
+        <language_strings>
+            <string language="en_gb" key="Username" value="Username" />
+            <string language="en_gb" key="User must change password at next login" value="User must change password at next login" />
+            <string language="en_gb" key="Save" value="Save" />
+            <string language="en_gb" key="Menu description" value="Menu description" />
+            <string language="en_gb" key="Label" value="Label" />
+            <string language="en_gb" key="Description" value="Description" />
+            <string language="en_gb" key="Menu style" value="Menu style" />
+            <string language="en_gb" key="Style" value="Style" />
+            <string language="en_gb" key="Menu items" value="Menu items" />
+            <string language="en_gb" key="Role description" value="Role description" />
+            <string language="en_gb" key="Password policy" value="Password policy" />
+            <string language="en_gb" key="Permissions" value="Permissions" />
+            <string language="en_gb" key="Policy description" value="Policy description" />
+            <string language="en_gb" key="Policy" value="Policy" />
+            <string language="en_gb" key="Allowed to change password" value="Allowed to change password" />
+            <string language="en_gb" key="Password change allowed every X days" value="Password change allowed every X days" />
+            <string language="en_gb" key="Must change password every X days" value="Must change password every X days" />
+            <string language="en_gb" key="Password cannot be the same as last X passwords" value="Password cannot be the same as last X passwords" />
+            <string language="en_gb" key="Minimum password length" value="Minimum password length" />
+            <string language="en_gb" key="Maximum password length" value="Maximum password length" />
+            <string language="en_gb" key="Passwords should include mixed case" value="Passwords should include mixed case" />
+            <string language="en_gb" key="Password should include A-Z characters" value="Passwords should include A-Z characters" />
+            <string language="en_gb" key="Passwords should include 0-9 characters" value="Passwords should include 0-9 characters" />
+            <string language="en_gb" key="Passwords should include symbols" value="Passwords should include symbols" />
+            <string language="en_gb" key="Permission" value="Permission" />
+            <string language="en_gb" key="Name" value="Name" />
+            <string language="en_gb" key="Label" value="Label" />
+            <string language="en_gb" key="Custom view" value="Custom view" />
+            <string language="en_gb" key="Priority" value="Priority" />
+            <string language="en_gb" key="Administrator" value="Administrator" />
+            <string language="en_gb" key="Accounts used for administration." value="Accounts used for administration." />
+            <string language="en_gb" key="Administration" value="Administration" />
+            <string language="en_gb" key="Site settings" value="Site settings" />
+            <string language="en_gb" key="Email" value="Email" />
+            <string langauge="en_gb" key="Can login to administrator" value="Can login to administrator" /> 
+            <string langauge="en_gb" key="Allows the user to access the administration area of the site" value="Allows the user to access the administration area of the site" />
+            <string langauge="en_gb" key="Can manage user roles" value="Can manage user roles" />
+            <string langauge="en_gb" key="Allows the user to create or update user roles." value="Allows the user to create or update user roles." />
+            <string langauge="en_gb" key="Can manage password policies" value="Can manage password policies" />
+            <string langauge="en_gb" key="Allows the user to create or update password policies." value="Allows the user to create or update password policies." />
+            <string langauge="en_gb" key="Can manage scheduled tasks" value="Can manage scheduled tasks" />
+            <string langauge="en_gb" key="Allows the user to manage background tasks." value="Allows the user to manage background tasks." />
+            <string langauge="en_gb" key="Can manage contacts" value="Can manage contacts" />
+            <string langauge="en_gb" key="Allows the user to manage contacts in the administration area of the site" value="Allows the user to manage contacts in the administration area of the site" />
+            <string langauge="en_gb" key="Can manage users" value="Can manage users" />
+            <string langauge="en_gb" key="Allows the user to manage other user accounts in the administration area of the site" value="Allows the user to manage other user accounts in the administration area of the site" />
+            <string langauge="en_gb" key="Can manage bundles" value="Can manage bundles" />
+            <string langauge="en_gb" key="Allows the user to manage manage bundles" value="Allows the user to manage manage bundles" />
+            <string langauge="en_gb" key="Can change bundle settings" value="Can change bundle settings" />
+            <string langauge="en_gb" key="Allows the user to change global settings (settings.xml)" value="Allows the user to change global settings (settings.xml)" />
+            <string langauge="en_gb" key="Can manage email accounts" value="Can manage email accounts" />
+            <string langauge="en_gb" key="Allows the user manage email accounts" value="Allows the user manage email accounts" />
+            <string langauge="en_gb" key="Can manage email templates" value="Can manage email templates" />
+            <string langauge="en_gb" key="Allows the user manage email templates" value="Allows the user manage email templates" />
+            <string langauge="en_gb" key="Can manage site menus" value="Can manage site menus" />
+            <string langauge="en_gb" key="Allows the user manage menus" value="Allows the user manage menus" />
+        </language_strings>
         <forms>
             <form name="user_account_details" submission-url="/" actions="administrator/users/save" method="post" show-steps="No" show-processing-page="Yes">
                 <page>
@@ -144,7 +206,7 @@
                             <field type="Text" name="password_policy[must_change_password_after_days]" data-type="int" label="Must change password every X days" />
                         </group>
                         <group layout="simple">
-                            <field type="Text" name="password_policy[password_history]" data-type="int" label="Password cannot be the same as last X password" />
+                            <field type="Text" name="password_policy[password_history]" data-type="int" label="Password cannot be the same as last X passwords" />
                         </group>
                         <group layout="simple">
                             <field type="Text" name="password_policy[min_length]" data-type="int" label="Minimum password length" />
